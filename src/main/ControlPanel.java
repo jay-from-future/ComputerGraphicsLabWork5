@@ -20,9 +20,9 @@ public class ControlPanel extends JPanel {
     private static final int POINT_COUNT = 8;
 
     // начальные значения координат вершин куба
-    private double[] xValues = {0, 0, 100, 100, 0, 0, 100, 100};
-    private double[] yValues = {0, 0, 0, 0, 100, 100, 100, 100};
-    private double[] zValues = {0, 100, 100, 0, 0, 100, 100, 0};
+    private double[] xValues = {-50, -50, 50, 50, -50, -50, 50, 50};
+    private double[] yValues = {50, 50, 50, 50, -50, -50, -50, -50};
+    private double[] zValues = {-50, 50, 50, -50, -50, 50, 50, -50};
 
     private ControlPanelListener controlPanelListener;
 

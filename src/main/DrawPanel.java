@@ -36,7 +36,9 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
     private boolean isAllLineVisible = true;
 
     public DrawPanel(int width, int height) {
-        addMouseListener(new DrawPanelMouseListener(this, width, height));
+        DrawPanelMouseListener drawPanelMouseListener = new DrawPanelMouseListener(this, width, height);
+        addMouseListener(drawPanelMouseListener);
+        addMouseMotionListener(drawPanelMouseListener);
         this.width = width;
         this.height = height;
         updateRotationMatrix();
@@ -71,7 +73,7 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
         }
 
         AffineTransform offsetToCenter = new AffineTransform();
-        offsetToCenter.translate(width / 2, ((height - 300) / 2));
+        offsetToCenter.translate(width / 2, ((height - 100) / 2));
         g2d.transform(offsetToCenter);
 
 
@@ -228,20 +230,26 @@ class DrawPanelMouseListener extends MouseAdapter {
         rotate();
     }
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        endX = e.getX();
+        endY = e.getY();
+        rotate();
+        startX = endX;
+        startY = endY;
+    }
+
     private void rotate() {
 
         double alpha;
         double beta;
 
-        double x_delta = endX - startX;
+        double x_delta = startX - endX;
         double y_delta = endY - startY;
 
-        if (Math.abs(x_delta) > Math.abs(y_delta)) {
-            beta = (x_delta / maxX) * 90;
-            rotateListener.yRotate(beta);
-        } else {
-            alpha = (y_delta / maxY) * 90;
-            rotateListener.xRotate(alpha);
-        }
+        beta = (x_delta / maxX) * 90;
+        rotateListener.yRotate(beta);
+        alpha = (y_delta / maxY) * 90;
+        rotateListener.xRotate(alpha);
     }
 }
