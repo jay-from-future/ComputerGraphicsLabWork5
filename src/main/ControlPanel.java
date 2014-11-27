@@ -2,18 +2,16 @@ package main;
 
 import interfaces.ControlPanelListener;
 import interfaces.RotateListener;
+import util.Line;
 import util.Point3D;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ControlPanel extends JPanel {
-
-    private static final boolean DEBUG_MODE = true;
 
     private static final String DEFAULT_ROTATION_STR = "Установить углы вращения по умолчанию";
     private static final String VISIBLE_LINE_STR = "Выявление видимых греней и ребер";
@@ -28,7 +26,7 @@ public class ControlPanel extends JPanel {
 
     private ControlPanelListener controlPanelListener;
 
-    private JCheckBox isBaseLineVisible;
+    private JCheckBox isVisible;
 
     public ControlPanel(ControlPanelListener controlPanelListener) {
 
@@ -42,30 +40,42 @@ public class ControlPanel extends JPanel {
         JButton setDefaultRotationButton = new JButton(DEFAULT_ROTATION_STR);
         setDefaultRotationButton.addActionListener(buttonListener);
 
-        isBaseLineVisible = new JCheckBox(VISIBLE_LINE_STR, true);
-        isBaseLineVisible.addActionListener(checkBoxListener);
+        isVisible = new JCheckBox(VISIBLE_LINE_STR, false);
+        isVisible.addActionListener(checkBoxListener);
 
         buttonPanel.add(setDefaultRotationButton);
-        buttonPanel.add(isBaseLineVisible);
+        buttonPanel.add(isVisible);
 
         add(buttonPanel);
-        sendCubePoints();
+        sendCubeLines();
     }
 
-    private void sendCubePoints() {
+    private void sendCubeLines() {
         List<Point3D> cubePoints = new ArrayList<Point3D>();
         for (int i = 0; i < POINT_COUNT; i++) {
             cubePoints.add(new Point3D(xValues[i], yValues[i], zValues[i]));
         }
 
-        if (DEBUG_MODE) {
-            System.out.println("sendCubePoints()");
-            for (Point3D p : cubePoints) {
-                System.out.println(p);
-            }
-        }
+        List<Line<Point3D>> cubeLines = new ArrayList<Line<Point3D>>();
 
-        controlPanelListener.setBasePoints(cubePoints);
+        cubeLines.add(new Line<Point3D>(cubePoints.get(0), cubePoints.get(1)));
+        cubeLines.add(new Line<Point3D>(cubePoints.get(1), cubePoints.get(2)));
+        cubeLines.add(new Line<Point3D>(cubePoints.get(2), cubePoints.get(3)));
+
+        cubeLines.add(new Line<Point3D>(cubePoints.get(3), cubePoints.get(0)));
+
+        cubeLines.add(new Line<Point3D>(cubePoints.get(4), cubePoints.get(5)));
+        cubeLines.add(new Line<Point3D>(cubePoints.get(5), cubePoints.get(6)));
+        cubeLines.add(new Line<Point3D>(cubePoints.get(6), cubePoints.get(7)));
+
+        cubeLines.add(new Line<Point3D>(cubePoints.get(7), cubePoints.get(4)));
+
+        cubeLines.add(new Line<Point3D>(cubePoints.get(0), cubePoints.get(4)));
+        cubeLines.add(new Line<Point3D>(cubePoints.get(1), cubePoints.get(5)));
+        cubeLines.add(new Line<Point3D>(cubePoints.get(2), cubePoints.get(6)));
+        cubeLines.add(new Line<Point3D>(cubePoints.get(3), cubePoints.get(7)));
+
+        controlPanelListener.setCubeLines(cubeLines);
     }
 
     class ButtonListener implements ActionListener {
@@ -81,7 +91,7 @@ public class ControlPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getActionCommand().equals(ControlPanel.VISIBLE_LINE_STR)) {
-                controlPanelListener.setBaseLineVisible(isBaseLineVisible.isSelected());
+                controlPanelListener.setVisibility(!isVisible.isSelected());
             }
         }
     }

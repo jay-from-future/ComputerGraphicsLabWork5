@@ -14,15 +14,33 @@ public class Line<T> {
         return start;
     }
 
-    public void setStart(T start) {
-        this.start = start;
-    }
-
     public T getEnd() {
         return end;
     }
 
-    public void setEnd(T end) {
-        this.end = end;
+    @Override
+    public String toString() {
+        return "Line{" +
+                "start=" + start +
+                ", end=" + end +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Line)) return false;
+
+        Line line = (Line) o;
+
+        return end.equals(line.end) && start.equals(line.start);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = start.hashCode();
+        result = 31 * result + end.hashCode();
+        return result;
     }
 }

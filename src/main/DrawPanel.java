@@ -3,6 +3,7 @@ package main;
 import Jama.Matrix;
 import interfaces.ControlPanelListener;
 import interfaces.RotateListener;
+import util.Line;
 import util.Point2D;
 import util.Point3D;
 import util.RotationUtil;
@@ -15,11 +16,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DrawPanel extends JPanel implements RotateListener, ControlPanelListener {
 
     private final static int AXIS_LENGTH = 50;
-    private final static int POINT_SIZE = 6;
 
     private int width;
     private int height;
@@ -30,11 +31,9 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
     private Matrix rotationMatrix;
     private Matrix defaultRoatationMatrix;
 
-    private List<Point3D> basePoints; // базисные точки
-    private List<Point3D> curvePoints; // точки кривой Безье
+    private List<Line<Point3D>> cubeLines;
 
-    private boolean isBaseLineVisible = true;
-    private boolean isCurvePointMarked = true;
+    private boolean isAllLineVisible = true;
 
     public DrawPanel(int width, int height) {
         addMouseListener(new DrawPanelMouseListener(this, width, height));
@@ -42,7 +41,6 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
         this.height = height;
         updateRotationMatrix();
         defaultRoatationMatrix = rotationMatrix;
-        basePoints = new ArrayList<Point3D>();
     }
 
     @Override
@@ -77,78 +75,36 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
         g2d.transform(offsetToCenter);
 
 
-        // рисуем куб
         g.setColor(Color.BLACK);
-        if (basePoints != null && basePoints.size() == 8) {
+        if (isAllLineVisible) {
+            // рисуем куб без обработки видимости ребер
+            if (cubeLines != null) {
+                for (Line<Point3D> l : cubeLines) {
+                    Point2D start = RotationUtil.orthogonalProjection(RotationUtil.convert(l.getStart(), rotationMatrix));
+                    Point2D end = RotationUtil.orthogonalProjection(RotationUtil.convert(l.getEnd(), rotationMatrix));
+                    drawLine(g, start, end);
+                }
+            }
+        } else {
+            // отображение только видимых ребер
+            List<Line<Point3D>> cubeLinesAfterRotation = new ArrayList<Line<Point3D>>();
+            for (Line<Point3D> l : cubeLines) {
+                Point3D start = RotationUtil.convert(l.getStart(), rotationMatrix);
+                Point3D end = RotationUtil.convert(l.getEnd(), rotationMatrix);
+                cubeLinesAfterRotation.add(new Line<Point3D>(start, end));
+            }
 
-            Point2D p0 = RotationUtil.orthogonalProjection(RotationUtil.convert(basePoints.get(0), rotationMatrix));
-            Point2D p1 = RotationUtil.orthogonalProjection(RotationUtil.convert(basePoints.get(1), rotationMatrix));
-            Point2D p2 = RotationUtil.orthogonalProjection(RotationUtil.convert(basePoints.get(2), rotationMatrix));
-            Point2D p3 = RotationUtil.orthogonalProjection(RotationUtil.convert(basePoints.get(3), rotationMatrix));
-            Point2D p4 = RotationUtil.orthogonalProjection(RotationUtil.convert(basePoints.get(4), rotationMatrix));
-            Point2D p5 = RotationUtil.orthogonalProjection(RotationUtil.convert(basePoints.get(5), rotationMatrix));
-            Point2D p6 = RotationUtil.orthogonalProjection(RotationUtil.convert(basePoints.get(6), rotationMatrix));
-            Point2D p7 = RotationUtil.orthogonalProjection(RotationUtil.convert(basePoints.get(7), rotationMatrix));
-
-            drawLine(g, p0, p1);
-            drawLine(g, p1, p2);
-            drawLine(g, p2, p3);
-            drawLine(g, p3, p0);
-
-            drawLine(g, p4, p5);
-            drawLine(g, p5, p6);
-            drawLine(g, p6, p7);
-            drawLine(g, p7, p4);
-
-            drawLine(g, p0, p4);
-            drawLine(g, p1, p5);
-            drawLine(g, p2, p6);
-            drawLine(g, p3, p7);
-
+            Map<Line<Point3D>, Boolean> visibleLines = Model.determineVisibility(cubeLinesAfterRotation);
+            for (Line<Point3D> l : cubeLinesAfterRotation) {
+                if (visibleLines.containsKey(l)) {
+                    if (visibleLines.get(l)) {
+                        Point2D start = RotationUtil.orthogonalProjection(l.getStart());
+                        Point2D end = RotationUtil.orthogonalProjection(l.getEnd());
+                        drawLine(g, start, end);
+                    }
+                }
+            }
         }
-
-//        // рисуем базисные точки
-//        if (isBaseLineVisible) {
-//            g.setColor(Color.BLACK);
-//            if (basePoints != null) {
-//                Point2D prevPoint = null;
-//                Point2D currentPoint;
-//                for (Point3D p : basePoints) {
-//                    p = new Point3D(p.getX(), -p.getY(), p.getZ());
-//                    currentPoint = RotationUtil.orthogonalProjection(RotationUtil.convert(p, rotationMatrix));
-//                    drawPointWithMark(g, currentPoint);
-//                    if (prevPoint != null) {
-//                        drawLine(g, prevPoint, currentPoint);
-//                    }
-//                    prevPoint = currentPoint;
-//                }
-//            }
-//        }
-//
-//        // расчитываем точки кривой Безье по базисным точкам
-//        if (basePoints != null) {
-//            if (!basePoints.isEmpty()) {
-//                curvePoints = Model.getCurvePoints(basePoints);
-//            }
-//        }
-//
-//        // рисуем точки кривой Безье
-//        g.setColor(Color.GRAY);
-//        if (curvePoints != null) {
-//            Point2D prevPoint = null;
-//            Point2D currentPoint;
-//            for (Point3D p : curvePoints) {
-//                p = new Point3D(p.getX(), -p.getY(), p.getZ());
-//                currentPoint = RotationUtil.orthogonalProjection(RotationUtil.convert(p, rotationMatrix));
-//                if (isCurvePointMarked) {
-//                    drawPointWithMark(g, currentPoint);
-//                }
-//                if (prevPoint != null) {
-//                    drawLine(g, prevPoint, currentPoint);
-//                }
-//                prevPoint = currentPoint;
-//            }
-//        }
     }
 
     @Override
@@ -187,13 +143,6 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
 
     private void updateYRotationMatrix() {
         rotationMatrix = RotationUtil.getYRotationMatrix(rotationMatrix, beta);
-    }
-
-    private void drawPointWithMark(Graphics g, Point2D p) {
-        drawLine(g, p, p);
-        int x = (int) p.getX();
-        int y = (int) p.getY();
-        g.drawRect(x - POINT_SIZE / 2, y - POINT_SIZE / 2, POINT_SIZE, POINT_SIZE);
     }
 
     private void drawLine(Graphics g, Point2D p1, Point2D p2) {
@@ -236,20 +185,13 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
 
 
     @Override
-    public void setBasePoints(List<Point3D> basePoints) {
-        this.basePoints = basePoints;
-        repaint();
+    public void setCubeLines(List<Line<Point3D>> cubeLines) {
+        this.cubeLines = cubeLines;
     }
 
     @Override
-    public void setBaseLineVisible(boolean visible) {
-        this.isBaseLineVisible = visible;
-        repaint();
-    }
-
-    @Override
-    public void setCurvePointMarked(boolean marked) {
-        this.isCurvePointMarked = marked;
+    public void setVisibility(boolean visible) {
+        this.isAllLineVisible = visible;
         repaint();
     }
 }
