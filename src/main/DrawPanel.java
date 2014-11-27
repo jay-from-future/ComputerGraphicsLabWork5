@@ -14,11 +14,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class DrawPanel extends JPanel implements RotateListener, ControlPanelListener {
 
     private final static int AXIS_LENGTH = 50;
+    private final static Color BACKGROUND_COLOR = Color.BLACK;
+    private final static Color MAIN_COLOR = Color.WHITE;
+
 
     private int width;
     private int height;
@@ -47,8 +49,8 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
     @Override
     public void paint(Graphics g) {
 
-        // заливка фона белым цветом
-        g.setColor(Color.WHITE);
+        // заливка фона
+        g.setColor(BACKGROUND_COLOR);
         g.fillRect(0, 0, width, height);
 
         // смещение цетра координатных осей на центр панели
@@ -76,10 +78,11 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
         g2d.transform(offsetToCenter);
 
 
-        g.setColor(Color.BLACK);
+
         if (isAllLineVisible) {
             // рисуем куб без обработки видимости ребер
             if (cubeLines != null) {
+                g.setColor(MAIN_COLOR);
                 for (Line<Point3D> l : cubeLines) {
                     Point2D start = RotationUtil.orthogonalProjection(RotationUtil.convert(l.getStart(), rotationMatrix));
                     Point2D end = RotationUtil.orthogonalProjection(RotationUtil.convert(l.getEnd(), rotationMatrix));
@@ -142,8 +145,9 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
 
                     g.setColor(r.getColor());
                     g.fillPolygon(xPoints, yPoints, pointsSize);
+
                 } else {
-                    g.setColor(Color.BLACK);
+                    g.setColor(MAIN_COLOR);
                     drawLine(g, points.get(0), points.get(1));
                     drawLine(g, points.get(1), points.get(2));
                     drawLine(g, points.get(2), points.get(3));
