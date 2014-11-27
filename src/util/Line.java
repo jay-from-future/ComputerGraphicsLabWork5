@@ -33,7 +33,7 @@ public class Line<T> {
 
         Line line = (Line) o;
 
-        return end.equals(line.end) && start.equals(line.start);
+        return (end.equals(line.end) && start.equals(line.start)) || (end.equals(line.start) && start.equals(line.end));
 
     }
 
@@ -42,5 +42,9 @@ public class Line<T> {
         int result = start.hashCode();
         result = 31 * result + end.hashCode();
         return result;
+    }
+
+    public Line<T> reverse() {
+        return new Line<T>(end, start);
     }
 }

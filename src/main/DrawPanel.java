@@ -3,10 +3,8 @@ package main;
 import Jama.Matrix;
 import interfaces.ControlPanelListener;
 import interfaces.RotateListener;
-import util.Line;
-import util.Point2D;
-import util.Point3D;
-import util.RotationUtil;
+import util.*;
+import util.Rectangle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -96,15 +95,68 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
                 cubeLinesAfterRotation.add(new Line<Point3D>(start, end));
             }
 
-            Map<Line<Point3D>, Boolean> visibleLines = Model.determineVisibility(cubeLinesAfterRotation);
+            List<Rectangle> rectangles = new ArrayList<Rectangle>();
+
+            Line<Point3D> l1 = cubeLinesAfterRotation.get(0);
+            Line<Point3D> l2 = cubeLinesAfterRotation.get(1);
+            Line<Point3D> l3 = cubeLinesAfterRotation.get(2);
+            Line<Point3D> l4 = cubeLinesAfterRotation.get(3);
+            Line<Point3D> l5 = cubeLinesAfterRotation.get(4);
+            Line<Point3D> l6 = cubeLinesAfterRotation.get(5);
+            Line<Point3D> l7 = cubeLinesAfterRotation.get(6);
+            Line<Point3D> l8 = cubeLinesAfterRotation.get(7);
+            Line<Point3D> l9 = cubeLinesAfterRotation.get(8);
+            Line<Point3D> l10 = cubeLinesAfterRotation.get(9);
+            Line<Point3D> l11 = cubeLinesAfterRotation.get(10);
+            Line<Point3D> l12 = cubeLinesAfterRotation.get(11);
+
+            rectangles.add(new Rectangle(Color.RED, l1, l2, l3, l4));
+            rectangles.add(new Rectangle(Color.BLUE, l5, l6, l7, l8));
+            rectangles.add(new Rectangle(Color.GREEN, l1, l10, l5, l9));
+            rectangles.add(new Rectangle(Color.LIGHT_GRAY, l2, l11, l6, l10));
+            rectangles.add(new Rectangle(Color.CYAN, l3, l12, l7, l11));
+            rectangles.add(new Rectangle(Color.YELLOW, l4, l9, l8, l12));
+
+            Map<Line<Point3D>, Boolean> visibleLinesMap = Model.determineVisibility(cubeLinesAfterRotation, rectangles);
             for (Line<Point3D> l : cubeLinesAfterRotation) {
-                if (visibleLines.containsKey(l)) {
-                    if (visibleLines.get(l)) {
+                if (visibleLinesMap.containsKey(l)) {
+                    if (visibleLinesMap.get(l)) {
                         Point2D start = RotationUtil.orthogonalProjection(l.getStart());
                         Point2D end = RotationUtil.orthogonalProjection(l.getEnd());
                         drawLine(g, start, end);
                     }
                 }
+            }
+
+            List<Rectangle> visibleRectangles = new ArrayList<Rectangle>();
+            for (Rectangle r : rectangles) {
+                if (r.isVisible()) {
+                    visibleRectangles.add(r);
+                }
+            }
+
+            for (Rectangle r : visibleRectangles) {
+
+                List<Point3D> points = r.getPoints();
+
+                int pointsSize = points.size();
+                int[] xPoints = new int[pointsSize];
+                int[] yPoints = new int[pointsSize];
+
+                Point2D currPoint;
+                for (int i = 0; i < pointsSize; i++) {
+                    currPoint = RotationUtil.orthogonalProjection(points.get(i));
+                    xPoints[i] = (int) currPoint.getX();
+                    yPoints[i] = (int) currPoint.getY();
+
+                    System.out.println(r.getColor());
+                    System.out.println("x " + xPoints[i]);
+                    System.out.println("y " + yPoints[i]);
+                    System.out.println();
+                }
+
+                g.setColor(r.getColor());
+                g.fillPolygon(xPoints, yPoints, pointsSize);
             }
         }
     }
