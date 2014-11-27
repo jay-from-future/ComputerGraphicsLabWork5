@@ -13,11 +13,13 @@ public class Rectangle {
 
     private boolean isVisible;
     private Color color;
+    private Texture texture;
 
     public Rectangle(Color color, Line<Point3D> line0, Line<Point3D> line1, Line<Point3D> line2, Line<Point3D> line3) {
         this(line0, line1, line2, line3);
         this.color = color;
         isVisible = false;
+        texture = new Texture(color);
     }
 
     public Rectangle(Line<Point3D> line0, Line<Point3D> line1, Line<Point3D> line2, Line<Point3D> line3) {
@@ -32,6 +34,10 @@ public class Rectangle {
 
     public Color getColor() {
         return color;
+    }
+
+    public Texture getTexture() {
+        return texture;
     }
 
     public boolean contains(Line<Point3D> line) {

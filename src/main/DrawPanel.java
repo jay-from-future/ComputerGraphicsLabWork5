@@ -21,6 +21,9 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
     private final static Color BACKGROUND_COLOR = Color.BLACK;
     private final static Color MAIN_COLOR = Color.WHITE;
 
+    //TODO
+    private final int intense = 1000;
+    private final PointLight pointLight = new PointLight(new Point3D(0, 0, 0), intense);
 
     private int width;
     private int height;
@@ -58,7 +61,7 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
         AffineTransform offsetToRightDownCorner = new AffineTransform();
         offsetToRightDownCorner.translate(width - AXIS_LENGTH, (height - 200) - AXIS_LENGTH);
         g2d.transform(offsetToRightDownCorner);
-
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // рисуем координатные оси
         Point3D zeroPoint = new Point3D(0, 0, 0);
@@ -76,7 +79,6 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
         AffineTransform offsetToCenter = new AffineTransform();
         offsetToCenter.translate(width / 2, ((height - 100) / 2));
         g2d.transform(offsetToCenter);
-
 
 
         if (isAllLineVisible) {
@@ -143,9 +145,12 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
                         yPoints[i] = (int) currPoint.getY();
                     }
 
-                    g.setColor(r.getColor());
-                    g.fillPolygon(xPoints, yPoints, pointsSize);
-
+                    Polygon polygon = new Polygon(xPoints, yPoints, pointsSize);
+                    Texture texture = r.getTexture();
+                    texture.setPointLight(pointLight);
+                    TexturePaint paint = texture.getTexturePaint(polygon, r);
+                    g2d.setPaint(paint);
+                    g.fillPolygon(polygon);
                 } else {
                     g.setColor(MAIN_COLOR);
                     drawLine(g, points.get(0), points.get(1));
