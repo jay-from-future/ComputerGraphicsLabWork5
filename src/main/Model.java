@@ -8,9 +8,8 @@ import java.util.Map;
 
 public class Model {
 
-    public static Map<Line<Point3D>, Boolean> determineVisibility(List<Line<Point3D>> cubeLines,
-                                                                  List<util.Rectangle> rectangles) {
-        Map<Line<Point3D>, Boolean> visibleLines = new HashMap<Line<Point3D>, Boolean>();
+    public static void determineVisibility(List<Line<Point3D>> cubeLines,
+                                           List<util.Rectangle> rectangles) {
         Map<Line<Point3D>, Line<Point2D>> linesProjection = new HashMap<Line<Point3D>, Line<Point2D>>();
         Map<Line<Point2D>, Double> linesWithZ = new HashMap<Line<Point2D>, Double>();
 
@@ -33,18 +32,12 @@ public class Model {
 
         for (Line<Point3D> l : cubeLines) {
             if (linesWithZ.get(linesProjection.get(l)) == maxZ) {
-                visibleLines.put(l, true);
                 for (Rectangle r : rectangles) {
                     if (r.contains(l)) {
                         r.setVisible(true);
-                        visibleLines.put(r.getLine0(), true);
-                        visibleLines.put(r.getLine1(), true);
-                        visibleLines.put(r.getLine2(), true);
-                        visibleLines.put(r.getLine3(), true);
                     }
                 }
             }
         }
-        return visibleLines;
     }
 }

@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +32,7 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
     private List<Line<Point3D>> cubeLines;
 
     private boolean isAllLineVisible = true;
+    private boolean isColored = false;
 
     public DrawPanel(int width, int height) {
         DrawPanelMouseListener drawPanelMouseListener = new DrawPanelMouseListener(this, width, height);
@@ -117,16 +117,7 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
             rectangles.add(new Rectangle(Color.CYAN, l3, l12, l7, l11));
             rectangles.add(new Rectangle(Color.YELLOW, l4, l9, l8, l12));
 
-            Map<Line<Point3D>, Boolean> visibleLinesMap = Model.determineVisibility(cubeLinesAfterRotation, rectangles);
-            for (Line<Point3D> l : cubeLinesAfterRotation) {
-                if (visibleLinesMap.containsKey(l)) {
-                    if (visibleLinesMap.get(l)) {
-                        Point2D start = RotationUtil.orthogonalProjection(l.getStart());
-                        Point2D end = RotationUtil.orthogonalProjection(l.getEnd());
-                        drawLine(g, start, end);
-                    }
-                }
-            }
+            Model.determineVisibility(cubeLinesAfterRotation, rectangles);
 
             List<Rectangle> visibleRectangles = new ArrayList<Rectangle>();
             for (Rectangle r : rectangles) {
@@ -136,27 +127,28 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
             }
 
             for (Rectangle r : visibleRectangles) {
-
                 List<Point3D> points = r.getPoints();
+                if (isColored) {
+                    int pointsSize = points.size();
+                    int[] xPoints = new int[pointsSize];
+                    int[] yPoints = new int[pointsSize];
 
-                int pointsSize = points.size();
-                int[] xPoints = new int[pointsSize];
-                int[] yPoints = new int[pointsSize];
+                    Point2D currPoint;
+                    for (int i = 0; i < pointsSize; i++) {
+                        currPoint = RotationUtil.orthogonalProjection(points.get(i));
+                        xPoints[i] = (int) currPoint.getX();
+                        yPoints[i] = (int) currPoint.getY();
+                    }
 
-                Point2D currPoint;
-                for (int i = 0; i < pointsSize; i++) {
-                    currPoint = RotationUtil.orthogonalProjection(points.get(i));
-                    xPoints[i] = (int) currPoint.getX();
-                    yPoints[i] = (int) currPoint.getY();
-
-                    System.out.println(r.getColor());
-                    System.out.println("x " + xPoints[i]);
-                    System.out.println("y " + yPoints[i]);
-                    System.out.println();
+                    g.setColor(r.getColor());
+                    g.fillPolygon(xPoints, yPoints, pointsSize);
+                } else {
+                    g.setColor(Color.BLACK);
+                    drawLine(g, points.get(0), points.get(1));
+                    drawLine(g, points.get(1), points.get(2));
+                    drawLine(g, points.get(2), points.get(3));
+                    drawLine(g, points.get(3), points.get(0));
                 }
-
-                g.setColor(r.getColor());
-                g.fillPolygon(xPoints, yPoints, pointsSize);
             }
         }
     }
@@ -246,6 +238,12 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
     @Override
     public void setVisibility(boolean visible) {
         this.isAllLineVisible = visible;
+        repaint();
+    }
+
+    @Override
+    public void setColored(boolean colored) {
+        this.isColored = colored;
         repaint();
     }
 }

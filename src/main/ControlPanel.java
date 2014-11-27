@@ -6,6 +6,7 @@ import util.Line;
 import util.Point3D;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ import java.util.List;
 public class ControlPanel extends JPanel {
 
     private static final String DEFAULT_ROTATION_STR = "Установить углы вращения по умолчанию";
-    private static final String VISIBLE_LINE_STR = "Выявление видимых греней и ребер";
+    private static final String VISIBLE_LINE_STR = "Только видимые грени и ребера";
+    private static final String COLORED_STR = "Раскрасить грани";
 
     // количество вершин куба
     private static final int POINT_COUNT = 8;
@@ -27,12 +29,13 @@ public class ControlPanel extends JPanel {
     private ControlPanelListener controlPanelListener;
 
     private JCheckBox isVisible;
+    private JCheckBox isColored;
 
     public ControlPanel(ControlPanelListener controlPanelListener) {
 
         this.controlPanelListener = controlPanelListener;
 
-        JPanel buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 1));
 
         ButtonListener buttonListener = new ButtonListener();
         CheckBoxListener checkBoxListener = new CheckBoxListener();
@@ -42,9 +45,12 @@ public class ControlPanel extends JPanel {
 
         isVisible = new JCheckBox(VISIBLE_LINE_STR, false);
         isVisible.addActionListener(checkBoxListener);
+        isColored = new JCheckBox(COLORED_STR, false);
+        isColored.addActionListener(checkBoxListener);
 
         buttonPanel.add(setDefaultRotationButton);
         buttonPanel.add(isVisible);
+        buttonPanel.add(isColored);
 
         add(buttonPanel);
         sendCubeLines();
@@ -92,6 +98,8 @@ public class ControlPanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
             if (e.getActionCommand().equals(ControlPanel.VISIBLE_LINE_STR)) {
                 controlPanelListener.setVisibility(!isVisible.isSelected());
+            } else if (e.getActionCommand().equals(ControlPanel.COLORED_STR)) {
+                controlPanelListener.setColored(isColored.isSelected());
             }
         }
     }
