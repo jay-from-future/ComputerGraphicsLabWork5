@@ -38,23 +38,6 @@ public class Rectangle {
         return line0.equals(line) || line1.equals(line) || line2.equals(line) || line3.equals(line);
     }
 
-    public Line<Point3D> getLine0() {
-        return line0;
-    }
-
-    public Line<Point3D> getLine1() {
-        return line1;
-    }
-
-    public Line<Point3D> getLine2() {
-        return line2;
-    }
-
-
-    public Line<Point3D> getLine3() {
-        return line3;
-    }
-
     public boolean isVisible() {
         return isVisible;
     }

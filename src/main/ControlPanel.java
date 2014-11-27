@@ -1,6 +1,7 @@
 package main;
 
 import interfaces.ControlPanelListener;
+import interfaces.ControlPanelSpinnerListener;
 import interfaces.RotateListener;
 import util.Line;
 import util.Point3D;
@@ -17,9 +18,11 @@ public class ControlPanel extends JPanel {
     private static final String DEFAULT_ROTATION_STR = "Установить углы вращения по умолчанию";
     private static final String VISIBLE_LINE_STR = "Только видимые грени и ребера";
     private static final String COLORED_STR = "Раскрасить грани";
+    private static final String SPINNER_STR = "Вращение куба";
 
     // количество вершин куба
     private static final int POINT_COUNT = 8;
+    private final ControlPanelSpinnerListener spinnerListener;
 
     // начальные значения координат вершин куба
     private double[] xValues = {-50, -50, 50, 50, -50, -50, 50, 50};
@@ -30,10 +33,12 @@ public class ControlPanel extends JPanel {
 
     private JCheckBox isVisible;
     private JCheckBox isColored;
+    private JCheckBox isSpinned;
 
-    public ControlPanel(ControlPanelListener controlPanelListener) {
+    public ControlPanel(ControlPanelListener controlPanelListener, ControlPanelSpinnerListener spinnerListener) {
 
         this.controlPanelListener = controlPanelListener;
+        this.spinnerListener = spinnerListener;
 
         JPanel buttonPanel = new JPanel(new GridLayout(3, 1));
 
@@ -47,10 +52,13 @@ public class ControlPanel extends JPanel {
         isVisible.addActionListener(checkBoxListener);
         isColored = new JCheckBox(COLORED_STR, false);
         isColored.addActionListener(checkBoxListener);
+        isSpinned = new JCheckBox(SPINNER_STR, true);
+        isSpinned.addActionListener(checkBoxListener);
 
         buttonPanel.add(setDefaultRotationButton);
         buttonPanel.add(isVisible);
         buttonPanel.add(isColored);
+        buttonPanel.add(isSpinned);
 
         add(buttonPanel);
         sendCubeLines();
@@ -100,6 +108,8 @@ public class ControlPanel extends JPanel {
                 controlPanelListener.setVisibility(!isVisible.isSelected());
             } else if (e.getActionCommand().equals(ControlPanel.COLORED_STR)) {
                 controlPanelListener.setColored(isColored.isSelected());
+            } else if (e.getActionCommand().equals(ControlPanel.SPINNER_STR)) {
+                spinnerListener.pauseOrRestart();
             }
         }
     }
