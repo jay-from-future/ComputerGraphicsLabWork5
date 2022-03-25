@@ -1,4 +1,4 @@
-package util;
+package xyz.jayfromfuture.util;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -6,18 +6,16 @@ import java.util.List;
 
 public class Rectangle {
 
-    private Line<Point3D> line0;
-    private Line<Point3D> line1;
-    private Line<Point3D> line2;
-    private Line<Point3D> line3;
+    private final Line<Point3D> line0;
+    private final Line<Point3D> line1;
+    private final Line<Point3D> line2;
+    private final Line<Point3D> line3;
 
     private boolean isVisible;
-    private Color color;
     private Texture texture;
 
     public Rectangle(Color color, Line<Point3D> line0, Line<Point3D> line1, Line<Point3D> line2, Line<Point3D> line3) {
         this(line0, line1, line2, line3);
-        this.color = color;
         isVisible = false;
         texture = new Texture(color);
     }
@@ -30,10 +28,6 @@ public class Rectangle {
         this.line3 = (line3.getStart().equals(line2.getEnd())) ? line3 : line3.reverse();
 
         isVisible = false;
-    }
-
-    public Color getColor() {
-        return color;
     }
 
     public Texture getTexture() {
@@ -53,7 +47,7 @@ public class Rectangle {
     }
 
     public List<Point3D> getPoints() {
-        List<Point3D> points = new ArrayList<Point3D>();
+        List<Point3D> points = new ArrayList<>();
         points.add(line0.getStart());
         points.add(line1.getStart());
         points.add(line2.getStart());

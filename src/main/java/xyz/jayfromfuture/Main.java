@@ -1,8 +1,8 @@
-package main;
+package xyz.jayfromfuture;
 
 public class Main {
 
-    private static final int WIDTH = 600;
+    private static final int WIDTH = 800;
     private static final int HEIGHT = 400;
     private static final long PERIOD = 50;
 
@@ -11,6 +11,6 @@ public class Main {
         Spinner spinner = new Spinner(drawPanel, PERIOD);
         ControlPanel controlPanel = new ControlPanel(drawPanel, spinner);
         new MainWindow("LabWork5", WIDTH, HEIGHT, drawPanel, controlPanel);
-        new Thread(spinner).run();
+        new Thread(spinner).start();
     }
 }

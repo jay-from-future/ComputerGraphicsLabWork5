@@ -1,10 +1,10 @@
-package main;
+package xyz.jayfromfuture;
 
-import interfaces.ControlPanelListener;
-import interfaces.ControlPanelSpinnerListener;
-import interfaces.RotateListener;
-import util.Line;
-import util.Point3D;
+import xyz.jayfromfuture.interfaces.ControlPanelListener;
+import xyz.jayfromfuture.interfaces.ControlPanelSpinnerListener;
+import xyz.jayfromfuture.interfaces.RotateListener;
+import xyz.jayfromfuture.util.Line;
+import xyz.jayfromfuture.util.Point3D;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,15 +25,14 @@ public class ControlPanel extends JPanel {
     private final ControlPanelSpinnerListener spinnerListener;
 
     // начальные значения координат вершин куба
-    private double[] xValues = {-50, -50, 50, 50, -50, -50, 50, 50};
-    private double[] yValues = {50, 50, 50, 50, -50, -50, -50, -50};
-    private double[] zValues = {-50, 50, 50, -50, -50, 50, 50, -50};
+    private final double[] xValues = {-50, -50, 50, 50, -50, -50, 50, 50};
+    private final double[] yValues = {50, 50, 50, 50, -50, -50, -50, -50};
+    private final double[] zValues = {-50, 50, 50, -50, -50, 50, 50, -50};
 
-    private ControlPanelListener controlPanelListener;
+    private final ControlPanelListener controlPanelListener;
 
-    private JCheckBox isVisible;
-    private JCheckBox isColored;
-    private JCheckBox isSpinned;
+    private final JCheckBox isVisible;
+    private final JCheckBox isColored;
 
     public ControlPanel(ControlPanelListener controlPanelListener, ControlPanelSpinnerListener spinnerListener) {
 
@@ -52,42 +51,42 @@ public class ControlPanel extends JPanel {
         isVisible.addActionListener(checkBoxListener);
         isColored = new JCheckBox(COLORED_STR, false);
         isColored.addActionListener(checkBoxListener);
-        isSpinned = new JCheckBox(SPINNER_STR, true);
-        isSpinned.addActionListener(checkBoxListener);
+        JCheckBox isSpinning = new JCheckBox(SPINNER_STR, true);
+        isSpinning.addActionListener(checkBoxListener);
 
         buttonPanel.add(setDefaultRotationButton);
         buttonPanel.add(isVisible);
         buttonPanel.add(isColored);
-        buttonPanel.add(isSpinned);
+        buttonPanel.add(isSpinning);
 
         add(buttonPanel);
         sendCubeLines();
     }
 
     private void sendCubeLines() {
-        List<Point3D> cubePoints = new ArrayList<Point3D>();
+        List<Point3D> cubePoints = new ArrayList<>();
         for (int i = 0; i < POINT_COUNT; i++) {
             cubePoints.add(new Point3D(xValues[i], yValues[i], zValues[i]));
         }
 
-        List<Line<Point3D>> cubeLines = new ArrayList<Line<Point3D>>();
+        List<Line<Point3D>> cubeLines = new ArrayList<>();
 
-        cubeLines.add(new Line<Point3D>(cubePoints.get(0), cubePoints.get(1)));
-        cubeLines.add(new Line<Point3D>(cubePoints.get(1), cubePoints.get(2)));
-        cubeLines.add(new Line<Point3D>(cubePoints.get(2), cubePoints.get(3)));
+        cubeLines.add(new Line<>(cubePoints.get(0), cubePoints.get(1)));
+        cubeLines.add(new Line<>(cubePoints.get(1), cubePoints.get(2)));
+        cubeLines.add(new Line<>(cubePoints.get(2), cubePoints.get(3)));
 
-        cubeLines.add(new Line<Point3D>(cubePoints.get(3), cubePoints.get(0)));
+        cubeLines.add(new Line<>(cubePoints.get(3), cubePoints.get(0)));
 
-        cubeLines.add(new Line<Point3D>(cubePoints.get(4), cubePoints.get(5)));
-        cubeLines.add(new Line<Point3D>(cubePoints.get(5), cubePoints.get(6)));
-        cubeLines.add(new Line<Point3D>(cubePoints.get(6), cubePoints.get(7)));
+        cubeLines.add(new Line<>(cubePoints.get(4), cubePoints.get(5)));
+        cubeLines.add(new Line<>(cubePoints.get(5), cubePoints.get(6)));
+        cubeLines.add(new Line<>(cubePoints.get(6), cubePoints.get(7)));
 
-        cubeLines.add(new Line<Point3D>(cubePoints.get(7), cubePoints.get(4)));
+        cubeLines.add(new Line<>(cubePoints.get(7), cubePoints.get(4)));
 
-        cubeLines.add(new Line<Point3D>(cubePoints.get(0), cubePoints.get(4)));
-        cubeLines.add(new Line<Point3D>(cubePoints.get(1), cubePoints.get(5)));
-        cubeLines.add(new Line<Point3D>(cubePoints.get(2), cubePoints.get(6)));
-        cubeLines.add(new Line<Point3D>(cubePoints.get(3), cubePoints.get(7)));
+        cubeLines.add(new Line<>(cubePoints.get(0), cubePoints.get(4)));
+        cubeLines.add(new Line<>(cubePoints.get(1), cubePoints.get(5)));
+        cubeLines.add(new Line<>(cubePoints.get(2), cubePoints.get(6)));
+        cubeLines.add(new Line<>(cubePoints.get(3), cubePoints.get(7)));
 
         controlPanelListener.setCubeLines(cubeLines);
     }

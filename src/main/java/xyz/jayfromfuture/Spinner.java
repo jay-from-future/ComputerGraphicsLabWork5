@@ -1,14 +1,14 @@
-package main;
+package xyz.jayfromfuture;
 
-import interfaces.ControlPanelSpinnerListener;
-import interfaces.RotateListener;
+import xyz.jayfromfuture.interfaces.ControlPanelSpinnerListener;
+import xyz.jayfromfuture.interfaces.RotateListener;
 
 public class Spinner implements Runnable, ControlPanelSpinnerListener {
 
     private boolean isRunning;
+    private final long period;
+    private final RotateListener rotateListener;
     private boolean isPaused;
-    private RotateListener rotateListener;
-    private long period;
 
     public Spinner(RotateListener rotateListener, long period) {
         this.rotateListener = rotateListener;
@@ -35,7 +35,7 @@ public class Spinner implements Runnable, ControlPanelSpinnerListener {
             try {
                 Thread.sleep(period);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                isRunning = false;
             }
         }
     }

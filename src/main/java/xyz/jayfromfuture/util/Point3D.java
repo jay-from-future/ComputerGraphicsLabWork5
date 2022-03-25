@@ -1,8 +1,8 @@
-package util;
+package xyz.jayfromfuture.util;
 
 public class Point3D extends Point2D {
 
-    private double z;
+    private final double z;
 
     public Point3D(double x, double y, double z) {
         super(x, y);

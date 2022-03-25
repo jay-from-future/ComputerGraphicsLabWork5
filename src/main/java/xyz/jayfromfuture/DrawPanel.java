@@ -1,10 +1,10 @@
-package main;
+package xyz.jayfromfuture;
 
 import Jama.Matrix;
-import interfaces.ControlPanelListener;
-import interfaces.RotateListener;
-import util.*;
-import util.Rectangle;
+import xyz.jayfromfuture.interfaces.ControlPanelListener;
+import xyz.jayfromfuture.interfaces.RotateListener;
+import xyz.jayfromfuture.util.*;
+import xyz.jayfromfuture.util.Rectangle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,18 +21,16 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
     private final static Color BACKGROUND_COLOR = Color.BLACK;
     private final static Color MAIN_COLOR = Color.WHITE;
 
-    //TODO
-    private final int intense = 1000;
-    private final PointLight pointLight = new PointLight(new Point3D(0, 0, 0), intense);
+    private final PointLight pointLight = new PointLight(new Point3D(0, 0, 0));
 
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
 
     private double alpha = 0;
     private double beta = 0;
 
     private Matrix rotationMatrix;
-    private Matrix defaultRoatationMatrix;
+    private final Matrix defaultRotationMatrix;
 
     private List<Line<Point3D>> cubeLines;
 
@@ -46,7 +44,7 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
         this.width = width;
         this.height = height;
         updateRotationMatrix();
-        defaultRoatationMatrix = rotationMatrix;
+        defaultRotationMatrix = rotationMatrix;
     }
 
     @Override
@@ -77,7 +75,7 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
         }
 
         AffineTransform offsetToCenter = new AffineTransform();
-        offsetToCenter.translate(width / 2, ((height - 100) / 2));
+        offsetToCenter.translate(width / 2.0, ((height - 100) / 2.0));
         g2d.transform(offsetToCenter);
 
 
@@ -93,14 +91,14 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
             }
         } else {
             // отображение только видимых ребер
-            List<Line<Point3D>> cubeLinesAfterRotation = new ArrayList<Line<Point3D>>();
+            List<Line<Point3D>> cubeLinesAfterRotation = new ArrayList<>();
             for (Line<Point3D> l : cubeLines) {
                 Point3D start = RotationUtil.convert(l.getStart(), rotationMatrix);
                 Point3D end = RotationUtil.convert(l.getEnd(), rotationMatrix);
-                cubeLinesAfterRotation.add(new Line<Point3D>(start, end));
+                cubeLinesAfterRotation.add(new Line<>(start, end));
             }
 
-            List<Rectangle> rectangles = new ArrayList<Rectangle>();
+            List<Rectangle> rectangles = new ArrayList<>();
 
             Line<Point3D> l1 = cubeLinesAfterRotation.get(0);
             Line<Point3D> l2 = cubeLinesAfterRotation.get(1);
@@ -124,7 +122,7 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
 
             Model.determineVisibility(cubeLinesAfterRotation, rectangles);
 
-            List<Rectangle> visibleRectangles = new ArrayList<Rectangle>();
+            List<Rectangle> visibleRectangles = new ArrayList<>();
             for (Rectangle r : rectangles) {
                 if (r.isVisible()) {
                     visibleRectangles.add(r);
@@ -216,9 +214,9 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
     }
 
     private void drawAxes(Graphics g, Point3D zeroPoint, Point3D xAxis, Point3D yAxis, Point3D zAxis) {
-        xAxis = RotationUtil.convert(xAxis, defaultRoatationMatrix);
-        yAxis = RotationUtil.convert(yAxis, defaultRoatationMatrix);
-        zAxis = RotationUtil.convert(zAxis, defaultRoatationMatrix);
+        xAxis = RotationUtil.convert(xAxis, defaultRotationMatrix);
+        yAxis = RotationUtil.convert(yAxis, defaultRotationMatrix);
+        zAxis = RotationUtil.convert(zAxis, defaultRotationMatrix);
 
         Point2D zeroPoint2D = RotationUtil.orthogonalProjection(zeroPoint);
         Point2D xAxis2D = RotationUtil.orthogonalProjection(xAxis);
@@ -259,10 +257,10 @@ public class DrawPanel extends JPanel implements RotateListener, ControlPanelLis
 
 class DrawPanelMouseListener extends MouseAdapter {
 
-    private RotateListener rotateListener;
+    private final RotateListener rotateListener;
 
-    private int maxX;
-    private int maxY;
+    private final int maxX;
+    private final int maxY;
 
     private int startX;
     private int startY;

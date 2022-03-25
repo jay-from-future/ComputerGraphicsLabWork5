@@ -1,7 +1,7 @@
-package interfaces;
+package xyz.jayfromfuture.interfaces;
 
-import util.Line;
-import util.Point3D;
+import xyz.jayfromfuture.util.Line;
+import xyz.jayfromfuture.util.Point3D;
 
 import java.util.List;
 

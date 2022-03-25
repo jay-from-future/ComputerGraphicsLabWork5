@@ -1,4 +1,4 @@
-package util;
+package xyz.jayfromfuture.util;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,8 +13,8 @@ public class Texture extends BufferedImage {
     private static final int HEIGHT = 100;
     private static final int IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
 
-    private Color baseColor;
-    private Graphics graphics;
+    private final Color baseColor;
+    private final Graphics graphics;
     private PointLight pointLight;
 
     public Texture(Color baseColor) {
@@ -36,6 +36,7 @@ public class Texture extends BufferedImage {
         Point3D p2 = points.get(2);
         Point3D p3 = points.get(3);
 
+        // todo
         List<Point3D> basePoints = Arrays.asList(p0, p1, p2, p3);
 
         double p0light = pointLight.getLightToPoint(p0);
@@ -72,7 +73,6 @@ public class Texture extends BufferedImage {
 
     public TexturePaint getTexturePaint(Polygon polygon, Rectangle rectangle) {
         repaint(rectangle);
-        TexturePaint texturePaint = new TexturePaint(this, polygon.getBounds2D());
-        return texturePaint;
+        return new TexturePaint(this, polygon.getBounds2D());
     }
 }

@@ -1,9 +1,9 @@
-package util;
+package xyz.jayfromfuture.util;
 
 public class Line<T> {
 
-    private T start;
-    private T end;
+    private final T start;
+    private final T end;
 
     public Line(T start, T end) {
         this.start = start;
